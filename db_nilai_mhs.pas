@@ -1,3 +1,9 @@
+{
+	Nama: Muhammad Rayhan Faridh
+	NIM: 222212766
+	Kelas: 1KS2
+	Mata Kuliah: Algoritma Pemrograman
+}
 program db_nilai_mhs;
 uses crt, sysutils;
 
@@ -14,12 +20,15 @@ type
 	end;
 
 var
-  dataMhs: array of mhs;
-	i,j,n: integer;
+	dataMhs: array of mhs;
+	i,j,k,n: integer;
 	pil: shortint;
-	lbr1,lbr2,lbr3,lbr4,lbr5,lbr6: shortint;
+	lbr: array [0..7] of shortint;
+	sum: record
+		tugas, uts, uas, prak, akhir: shortint;
+	end;
 
-procedure nilai_akhir(); forward;
+procedure predikat(); forward;
 procedure input();
 var batasJ, awal_I, akhir_I: integer;
 begin
@@ -27,7 +36,7 @@ begin
 		clrscr;
 		write('Masukkan banyak mahasiswa: '); readln(n);
 	until (n>0);
-	setlength(dataMhs, n);
+	setlength(dataMhs, n); // menyesuaikan panjang array sesuai banyak mahasiswa dimulai indeks 0
 	
 	batasJ := n div 5;
 	awal_I := 1;
@@ -37,6 +46,13 @@ begin
 	if (n<5) then begin
 		batasJ := 1;
 		akhir_I := n;
+	end;
+	if n=1 then begin
+		sum.tugas := 1;
+		sum.uts := 1;
+		sum.uas := 1;
+		sum.prak := 1;
+		sum.akhir := 1;
 	end;
 
 	writeln;
@@ -49,15 +65,17 @@ begin
 			writeln('Input data mahasiswa ke-',i);
 			with dataMhs[i-1] do
 			begin
-				// write('NIM: '); readln(nim);
-				write('Nama: '); readln(nama);
+				write('NIM        : '); readln(nim);
+				write('Nama       : '); readln(nama);
 				nama := upcase(nama);
-				// write('Alamat: '); readln(alamat);
-				// alamat := upcase(alamat);
+				write('Alamat     : '); readln(alamat);
+				alamat := upcase(alamat);
 				write('Nilai Tugas: '); readln(nilai.tugas);
-				write('Nilai UTS: '); readln(nilai.uts);
-				write('Nilai UAS: '); readln(nilai.uas);
-				write('Nilai PRAK: '); readln(nilai.prak);
+				write('Nilai UTS  : '); readln(nilai.uts);
+				write('Nilai UAS  : '); readln(nilai.uas);
+				write('Nilai PRAK : '); readln(nilai.prak);
+				nilai.akhir := (10/100)*nilai.tugas + (30/100)*nilai.uts + (30/100)*nilai.uas + (30/100)*nilai.prak;
+				writeln('Nilai Akhir: ', nilai.akhir:0:2);
 			end;
 		end;
 		awal_I := i+1;
@@ -69,11 +87,11 @@ begin
 			write('Enter untuk melanjutkan input data '); readkey;
 		end;
 		writeln(n, ' data mahasiswa sukses diinputkan.');
+		write('Enter untuk kembali ke menu ');
 	end;
-	nilai_akhir();
+	predikat();
 end;
 
-// procedure menu(); forward;
 function error(): boolean; // menampilkan pesan error jika n terbaca nol
 begin
 	if n=0 then begin
@@ -84,101 +102,127 @@ begin
 	error := (n=0);
 end;
 
-procedure nilai_akhir();
+procedure predikat();
 begin
 	for i:=1 to n do begin
 		with dataMhs[i-1] do begin
-			with nilai do begin
-				akhir := (10/100)*tugas + (30/100)*uts + (30/100)*uas + (30/100)*prak;
-
-				case round(akhir) of
-					85..100: grade:='A';
-					80..84: grade:='A-';
-					75..79: grade:='B+';
-					70..74: grade:='B';
-					65..69: grade:='C+';
-					60..64: grade:='C';
-					55..59: grade:='D+';
-					40..54: grade:='D';
-					0..39: grade:='E';
-				end;
+			case round(nilai.akhir) of
+				85..100: grade:='A';
+				80..84: grade:='A-';
+				75..79: grade:='B+';
+				70..74: grade:='B';
+				65..69: grade:='C+';
+				60..64: grade:='C';
+				55..59: grade:='D+';
+				40..54: grade:='D';
+				0..39: grade:='E';
 			end;
 		end;
 	end;
 end;
 
 procedure tampil_alamat();
+var batasJ, awal_I, akhir_I: integer;
 begin
-	clrscr;
-	writeln('Alamat Mahasiswa 1KS2');
-	writeln;
-	writeln('=====================================================================');
-	writeln('|    NIM    |              Nama              |        Alamat        |');
-	writeln('|-----------|--------------------------------|----------------------|');
-	for i:=1 to n do begin
-		with dataMhs[i-1] do begin
-			lbr1 := 9-length(nim);
-			lbr2 := 30-length(nama);
-			lbr3 := 20-length(alamat);
+	batasJ := n div 5;
+	awal_I := 1;
+	akhir_I := 5;
 
-			write('| ', nim, '':lbr1, ' | ');
-			write(nama, '':lbr2, ' | ');
-			writeln(alamat, '':lbr3, ' |');
-		end;
+	if (n mod 5 <> 0) then batasJ := batasJ+1;
+	if (n<5) then begin
+		batasJ := 1;
+		akhir_I := n;
 	end;
-	writeln('=====================================================================');
+
+	for j:=1 to batasJ do begin
+		clrscr;
+		writeln('Alamat Mahasiswa 1KS2');
+		writeln;
+		writeln('=====================================================================');
+		writeln('|    NIM    |              Nama              |        Alamat        |');
+		writeln('|-----------|--------------------------------|----------------------|');
+
+		if (n>5) and (n mod 5<>0) and (j=batasJ) then akhir_I := n;
+		for i:=awal_I to akhir_I do begin
+			with dataMhs[i-1] do begin
+				lbr[0] := 9-length(nim);
+				lbr[1] := 30-length(nama);
+				lbr[2] := 20-length(alamat);
+
+				write('| ', nim, '':lbr[0], ' | ');
+				write(nama, '':lbr[1], ' | ');
+				writeln(alamat, '':lbr[2], ' |');
+			end;
+		end;
+		awal_I := i+1;
+		akhir_I := awal_I+4;
+
+		writeln('=====================================================================');
+		writeln;
+		if j<batasJ then begin
+			writeln('Menampilkan ', awal_I-5, '-', akhir_I-5, ' dari ', n, ' data alamat mahasiswa 1KS2.');
+			write('Enter untuk ke halaman selanjutnya '); readkey;
+		end;
+		writeln(n, ' data alamat mahasiswa 1KS2 sukses ditampilkan.');
+		write('Enter untuk kembali ke menu ');
+	end;
 end;
 
-procedure tampil_grade();
+procedure tampil_nilai();
+var batasJ, awal_I, akhir_I: integer;
 begin
-	clrscr;
-	writeln('Nilai Akhir Mahasiswa 1KS2');
-	writeln;
-	writeln('====================================================================');
-	writeln('|    NIM    |              Nama              | Nilai Akhir | Grade |');
-	writeln('|-----------|--------------------------------|-------------|-------|');
-	for i:=1 to n do begin
-		with dataMhs[i-1] do begin
-			lbr1 := 9-length(nim);
-			lbr2 := 30-length(nama);
-			lbr3 := 8-length(inttoStr(round(nilai.akhir)));
-			lbr4 := 5-length(grade);
+	batasJ := n div 5;
+	awal_I := 1;
+	akhir_I := 5;
 
-			write('| ', nim, '':lbr1, ' | ');
-			write(nama, '':lbr2, ' | ');
-			write('':lbr3, nilai.akhir:0:2, ' | ');
-			writeln(grade, '':lbr4, ' |');
-		end;
+	if (n mod 5 <> 0) then batasJ := batasJ+1;
+	if (n<5) then begin
+		batasJ := 1;
+		akhir_I := n;
 	end;
-	writeln('====================================================================');
-end;
 
-procedure tampil_detail();
-begin
-	clrscr;
-	writeln('Transparansi Nilai Mahasiswa 1KS2');
-	writeln;
-	writeln('=======================================================================');
-	writeln('|              Nama              | TUGAS | UTS | UAS | PRAK |  AKHIR  |');
-	writeln('|--------------------------------|-------|-----|-----|------|---------|');
-	for i:=1 to n do begin
-		with dataMhs[i-1] do begin
-			lbr1 := 30-length(nama);
-			lbr2 := 5-length(inttoStr(nilai.tugas));
-			lbr3 := 3-length(inttoStr(nilai.uts));
-			lbr4 := 3-length(inttoStr(nilai.uas));
-			lbr5 := 4-length(inttoStr(nilai.prak));
-			lbr6 := 4-length(inttoStr(round(nilai.akhir)));
+	for j:=1 to batasJ do begin
+		clrscr;
+		writeln('Nilai ALPRO Mahasiswa 1KS2');
+		writeln;
+		writeln('===========================================================================================');
+		writeln('|    NIM    |              Nama              | TUGAS | UTS | UAS | PRAK |  AKHIR  | Grade |');
+		writeln('|-----------|--------------------------------|-------|-----|-----|------|---------|-------|');
 
-			write('| ', nama, '':lbr1, ' | ');
-			write('':lbr2, nilai.tugas, ' | ');
-			write('':lbr3, nilai.uts, ' | ');
-			write('':lbr4, nilai.uas, ' | ');
-			write('':lbr5, nilai.prak, ' | ');
-			writeln('':lbr6, nilai.akhir:0:2, ' |');
+		if (n>5) and (n mod 5<>0) and (j=batasJ) then akhir_I := n;
+		for i:=awal_I to akhir_I do begin
+			with dataMhs[i-1] do begin
+				lbr[0] := 9-length(nim);
+				lbr[1] := 30-length(nama);
+				lbr[2] := 5-length(inttoStr(nilai.tugas));
+				lbr[3] := 3-length(inttoStr(nilai.uts));
+				lbr[4] := 3-length(inttoStr(nilai.uas));
+				lbr[5] := 4-length(inttoStr(nilai.prak));
+				lbr[6] := 4-length(inttoStr(round(nilai.akhir)));
+				lbr[7] := 5-length(grade);
+
+				write('| ', nim, '':lbr[0], ' | ');
+				write(nama, '':lbr[1], ' | ');
+				write('':lbr[2], nilai.tugas, ' | ');
+				write('':lbr[3], nilai.uts, ' | ');
+				write('':lbr[4], nilai.uas, ' | ');
+				write('':lbr[5], nilai.prak, ' | ');
+				write('':lbr[6], nilai.akhir:0:2, ' | ');
+				writeln(grade, '':lbr[7], ' |');
+			end;
 		end;
+		awal_I := i+1;
+		akhir_I := awal_I+4;
+
+		writeln('===========================================================================================');
+		writeln;
+		if j<batasJ then begin
+			writeln('Menampilkan ', awal_I-5, '-', akhir_I-5, ' dari ', n, ' data nilai mahasiswa 1KS2.');
+			write('Enter untuk ke halaman selanjutnya '); readkey;
+		end;
+		writeln(n, ' data nilai mahasiswa 1KS2 sukses ditampilkan.');
+		write('Enter untuk kembali ke menu ');
 	end;
-	writeln('=======================================================================');
 end;
 
 procedure tampil();
@@ -188,27 +232,21 @@ begin
 	writeln('Menu Tampilan');
 	writeln('1. Daftar Alamat');
 	writeln('2. Daftar Nilai Akhir dan Grade');
-	writeln('3. Daftar Nilai Tugas, UTS, UAS, Prak, Akhir');
-	writeln('Ketik angka selain 1-3 untuk keluar!');
+	writeln('Ketik angka selain 1-2 untuk keluar!');
 	write('Pilihan Anda: '); readln(pil);
 
 	case pil of
 		1: tampil_alamat();
-		2: tampil_grade();
-		3: tampil_detail();
+		2: tampil_nilai();
 		else writeln('Terima kasih!');
 	end;
 end;
 
 procedure max();
 var
-  maks: record
+	maks: record
 		tugas, uts, uas, prak: shortint;
 		akhir: real;
-	end;
-  pemilik: string[30];
-  sum: record
-		tugas, uts, uas, prak, akhir: shortint;
 	end;
 begin
 	if error() = true then exit; // checking n value
@@ -224,17 +262,16 @@ begin
 
 	if (pil<1) or (pil>5) then writeln('Terima kasih!');
 
-	maks.tugas := -1;
-	maks.uts := -1;
-	maks.uas := -1;
-	maks.prak := -1;
-	maks.akhir := -1;
-	for i:=1 to n do begin
+	maks.tugas := dataMhs[0].nilai.tugas;
+	maks.uts := dataMhs[0].nilai.uts;
+	maks.uas := dataMhs[0].nilai.uas;
+	maks.prak := dataMhs[0].nilai.prak;
+	maks.akhir := dataMhs[0].nilai.akhir;
+	for i:=2 to n do begin
 		case pil of
 			1: begin
 				if dataMhs[i-1].nilai.tugas > maks.tugas then begin
 					maks.tugas := dataMhs[i-1].nilai.tugas;
-					pemilik := dataMhs[i-1].nama;
 					sum.tugas := 1;
 				end
 				else if dataMhs[i-1].nilai.tugas = maks.tugas then
@@ -243,7 +280,6 @@ begin
 			2: begin
 				if dataMhs[i-1].nilai.uts > maks.uts then begin
 					maks.uts := dataMhs[i-1].nilai.uts;
-					pemilik := dataMhs[i-1].nama;
 					sum.uts := 1;
 				end
 				else if dataMhs[i-1].nilai.uts = maks.uts then
@@ -252,7 +288,6 @@ begin
 			3: begin
 				if dataMhs[i-1].nilai.uas > maks.uas then begin
 					maks.uas := dataMhs[i-1].nilai.uas;
-					pemilik := dataMhs[i-1].nama;
 					sum.uas := 1;
 				end
 				else if dataMhs[i-1].nilai.uas = maks.uas then
@@ -261,7 +296,6 @@ begin
 			4: begin
 				if dataMhs[i-1].nilai.prak > maks.prak then begin
 					maks.prak := dataMhs[i-1].nilai.prak;
-					pemilik := dataMhs[i-1].nama;
 					sum.prak := 1;
 				end
 				else if dataMhs[i-1].nilai.prak = maks.prak then
@@ -270,7 +304,6 @@ begin
 			5: begin
 				if dataMhs[i-1].nilai.akhir > maks.akhir then begin
 					maks.akhir := dataMhs[i-1].nilai.akhir;
-					pemilik := dataMhs[i-1].nama;
 					sum.akhir := 1;
 				end
 				else if dataMhs[i-1].nilai.akhir = maks.akhir then
@@ -280,62 +313,165 @@ begin
 	end;
 
 	case pil of
-		1: writeln('Ditemukan ', sum.tugas, ' orang dengan nilai tugas terbesar -> ', maks.tugas);
-		2: writeln('Ditemukan ', sum.uts, ' orang dengan nilai tugas terbesar -> ', maks.uts);
-		3: writeln('Ditemukan ', sum.uas, ' orang dengan nilai tugas terbesar -> ', maks.uas);
-		4: writeln('Ditemukan ', sum.prak, ' orang dengan nilai tugas terbesar -> ', maks.prak);
-		5: writeln('Ditemukan ', sum.akhir, ' orang dengan nilai tugas terbesar -> ', maks.akhir:0:2);
+		1: writeln('Ditemukan ', sum.tugas, ' orang dengan nilai Tugas terbesar -> ', maks.tugas);
+		2: writeln('Ditemukan ', sum.uts, ' orang dengan nilai UTS terbesar -> ', maks.uts);
+		3: writeln('Ditemukan ', sum.uas, ' orang dengan nilai UAS terbesar -> ', maks.uas);
+		4: writeln('Ditemukan ', sum.prak, ' orang dengan nilai Praktikum terbesar -> ', maks.prak);
+		5: writeln('Ditemukan ', sum.akhir, ' orang dengan nilai Akhir terbesar -> ', maks.akhir:0:2);
 	end;
 
 	for i:=1 to n do begin
 		case pil of
-			1: begin
-				if dataMhs[i-1].nilai.tugas = maks.tugas then
-					writeln('- ', dataMhs[i-1].nama);
-			end;
-			2: begin
-				if dataMhs[i-1].nilai.uts = maks.uts then
-					writeln('- ', dataMhs[i-1].nama);
-			end;
-			3: begin
-				if dataMhs[i-1].nilai.uas = maks.uas then
-					writeln('- ', dataMhs[i-1].nama);
-			end;
-			4: begin
-				if dataMhs[i-1].nilai.prak = maks.prak then
-					writeln('- ', dataMhs[i-1].nama);
-			end;
-			5: begin
-				if dataMhs[i-1].nilai.akhir = maks.akhir then
-					writeln('- ', dataMhs[i-1].nama);
-			end;
+			1: if dataMhs[i-1].nilai.tugas = maks.tugas then writeln('- ', dataMhs[i-1].nama);
+			2: if dataMhs[i-1].nilai.uts = maks.uts then writeln('- ', dataMhs[i-1].nama);
+			3: if dataMhs[i-1].nilai.uas = maks.uas then writeln('- ', dataMhs[i-1].nama);
+			4: if dataMhs[i-1].nilai.prak = maks.prak then writeln('- ', dataMhs[i-1].nama);
+			5: if dataMhs[i-1].nilai.akhir = maks.akhir then writeln('- ', dataMhs[i-1].nama);
 		end;
+	end;
+	
+	if (pil>=1) and (pil<=5) then begin
+		writeln;
+		write('Enter untuk kembali ke menu ');
 	end;
 end;
 
-// function min(): integer;
-// begin
-// 	min := dataMhs[0].nilai;
-// 	for i:=1 to n-1 do begin
-// 		if dataMhs[i].nilai < min then
-// 			min := dataMhs[i].nilai;
-// 	end;
-// end;
+procedure min();
+var
+	minim: record
+		tugas, uts, uas, prak: shortint;
+		akhir: real;
+	end;
+begin
+	if error() = true then exit; // checking n value
+	clrscr;
+	writeln('Pencarian Nilai Minimum');
+	writeln('1. Nilai Tugas');
+	writeln('2. Nilai UTS');
+	writeln('3. Nilai UAS');
+	writeln('4. Nilai Praktikum');
+	writeln('5. Nilai Akhir');
+	writeln('Ketik angka selain 1-5 untuk keluar!');
+	write('Cari Berdasar: '); readln(pil);
 
-// function total(): integer;
-// var sum: integer;
-// begin
-// 	sum := 0;
-// 	for i:=0 to n-1 do begin
-// 		sum := sum + dataMhs[i].nilai;
-// 	end;
-// 	total := sum;
-// end;
+	if (pil<1) or (pil>5) then writeln('Terima kasih!');
 
-// function rerata(): real;
-// begin
-// 	rerata := total/n;
-// end;
+	minim.tugas := dataMhs[0].nilai.tugas;
+	minim.uts := dataMhs[0].nilai.uts;
+	minim.uas := dataMhs[0].nilai.uas;
+	minim.prak := dataMhs[0].nilai.prak;
+	minim.akhir := dataMhs[0].nilai.akhir;
+	for i:=2 to n do begin
+		case pil of
+			1: begin
+				if dataMhs[i-1].nilai.tugas < minim.tugas then begin
+					minim.tugas := dataMhs[i-1].nilai.tugas;
+					sum.tugas := 1;
+				end
+				else if dataMhs[i-1].nilai.tugas = minim.tugas then
+					sum.tugas := sum.tugas+1;
+			end;
+			2: begin
+				if dataMhs[i-1].nilai.uts < minim.uts then begin
+					minim.uts := dataMhs[i-1].nilai.uts;
+					sum.uts := 1;
+				end
+				else if dataMhs[i-1].nilai.uts = minim.uts then
+					sum.uts := sum.uts+1;
+			end;
+			3: begin
+				if dataMhs[i-1].nilai.uas < minim.uas then begin
+					minim.uas := dataMhs[i-1].nilai.uas;
+					sum.uas := 1;
+				end
+				else if dataMhs[i-1].nilai.uas = minim.uas then
+					sum.uas := sum.uas+1;
+			end;
+			4: begin
+				if dataMhs[i-1].nilai.prak < minim.prak then begin
+					minim.prak := dataMhs[i-1].nilai.prak;
+					sum.prak := 1;
+				end
+				else if dataMhs[i-1].nilai.prak = minim.prak then
+					sum.prak := sum.prak+1;
+			end;
+			5: begin
+				if dataMhs[i-1].nilai.akhir < minim.akhir then begin
+					minim.akhir := dataMhs[i-1].nilai.akhir;
+					sum.akhir := 1;
+				end
+				else if dataMhs[i-1].nilai.akhir = minim.akhir then
+					sum.akhir := sum.akhir+1;
+			end;
+		end;
+	end;
+
+	case pil of
+		1: writeln('Ditemukan ', sum.tugas, ' orang dengan nilai Tugas terkecil -> ', minim.tugas);
+		2: writeln('Ditemukan ', sum.uts, ' orang dengan nilai UTS terkecil -> ', minim.uts);
+		3: writeln('Ditemukan ', sum.uas, ' orang dengan nilai UAS terkecil -> ', minim.uas);
+		4: writeln('Ditemukan ', sum.prak, ' orang dengan nilai Praktikum terkecil -> ', minim.prak);
+		5: writeln('Ditemukan ', sum.akhir, ' orang dengan nilai Akhir terkecil -> ', minim.akhir:0:2);
+	end;
+
+	for i:=1 to n do begin
+		case pil of
+			1: if dataMhs[i-1].nilai.tugas = minim.tugas then writeln('- ', dataMhs[i-1].nama);
+			2: if dataMhs[i-1].nilai.uts = minim.uts then writeln('- ', dataMhs[i-1].nama);
+			3: if dataMhs[i-1].nilai.uas = minim.uas then writeln('- ', dataMhs[i-1].nama);
+			4: if dataMhs[i-1].nilai.prak = minim.prak then writeln('- ', dataMhs[i-1].nama);
+			5: if dataMhs[i-1].nilai.akhir = minim.akhir then writeln('- ', dataMhs[i-1].nama);
+		end;
+	end;
+
+	if (pil>=1) and (pil<=5) then begin
+		writeln;
+		write('Enter untuk kembali ke menu ');
+	end;
+end;
+
+function total(pil: shortint): real;
+var sum: real;
+begin
+	sum := 0;
+	for i:=1 to n do begin
+		case pil of
+			1: sum := sum + dataMhs[i-1].nilai.tugas;
+			2: sum := sum + dataMhs[i-1].nilai.uts;
+			3: sum := sum + dataMhs[i-1].nilai.uas;
+			4: sum := sum + dataMhs[i-1].nilai.prak;
+			5: sum := sum + dataMhs[i-1].nilai.akhir;
+		end;
+	end;
+	total := sum;
+end;
+
+function rerata(): real;
+begin
+	if error() = true then exit; // checking n value
+	clrscr;
+	writeln('Pencarian Rata-rata Nilai');
+	writeln('1. Nilai Tugas');
+	writeln('2. Nilai UTS');
+	writeln('3. Nilai UAS');
+	writeln('4. Nilai Praktikum');
+	writeln('5. Nilai Akhir');
+	writeln('Ketik angka selain 1-5 untuk keluar!');
+	write('Cari Berdasar: '); readln(pil);
+	
+	rerata := total(pil)/n;
+	if pil=1 then writeln('Rerata nilai Tugas Alpro adalah ', rerata:0:2)
+	else if pil=2 then writeln('Rerata nilai UTS Alpro adalah ', rerata:0:2)
+	else if pil=3 then writeln('Rerata nilai UAS Alpro adalah ', rerata:0:2)
+	else if pil=4 then writeln('Rerata nilai Praktikum Alpro adalah ', rerata:0:2)
+	else if pil=5 then writeln('Rerata nilai Akhir Alpro adalah ', rerata:0:2)
+	else writeln('Terima kasih!');
+	
+	if (pil>=1) and (pil<=5) then begin
+		writeln;
+		write('Enter untuk kembali ke menu ');
+	end;
+end;
 
 procedure menu();
 begin
@@ -352,9 +488,11 @@ begin
 	write('Pilihan Anda: '); readln(pil);
 	case pil of
 		1: input();
-    2: tampil();
+		2: tampil();
 		3: max();
-    else writeln('Terima kasih!');
+		4: min();
+		5: rerata();
+		else writeln('Terima kasih!');
 	end;
 	readkey;
 end;

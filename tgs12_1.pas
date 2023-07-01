@@ -1,4 +1,9 @@
-// Created by M. Rayhan Faridh
+{
+	Nama: Muhammad Rayhan Faridh
+	NIM: 222212766
+	Kelas: 1KS2
+	Mata Kuliah: Algoritma Pemrograman
+}
 program kalkulator_sederhana;
 uses crt;
 
@@ -26,11 +31,9 @@ begin
 end;
 
 function fak(n: integer): longint;
-var has: longint;
 begin
-	if n = 0 then has := 1
-	else has := n * fak(n-1);
-	writeln('Hasilnya adalah ', has);
+	if n = 0 then fak := 1
+	else fak := n * fak(n-1);
 end;
 
 var
@@ -59,11 +62,12 @@ lagi:
 			else if pil=2 then bagi(a,b)
 			else if pil=3 then tambah(a,b)
 			else kurang(a,b);
+			writeln('Hasilnya adalah ', has:0:2);
 		end;
 		5: begin
 			write('Masukkan n: '); 
 			readln(n);
-			fak(n);
+			writeln('Hasilnya adalah ', fak(n));
 		end;
 		6: exit;
 		else begin

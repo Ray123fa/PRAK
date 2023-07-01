@@ -1,3 +1,10 @@
+{
+	Nama: Muhammad Rayhan Faridh
+	NIM: 222212766
+	Kelas: 1KS2
+	Mata Kuliah: Algoritma Pemrograman
+}
+program desimalBiner;
 uses crt;
 
 function biner(n: integer): string;
@@ -11,6 +18,7 @@ end;
 
 var n: integer;
 begin
+	clrscr;
 	write('N: '); readln(n);
 	writeln('Biner: ', biner(n));
 end.
